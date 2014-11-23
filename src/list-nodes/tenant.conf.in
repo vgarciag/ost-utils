@@ -1,0 +1,12 @@
+# Configuration file for list nodes. Not specified values with "" or ''
+
+[TENANT INFORMATION]
+os_tenant_id=
+os_tenant_name=
+
+[AUTH SERVER]
+os_auth_url=
+
+[TENANT ACCESS CREDENTIALS]
+os_username=
+os_password=
