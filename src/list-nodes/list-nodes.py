@@ -19,12 +19,7 @@ from novaclient.client            import Client
 
 from keystoneclient.openstack.common.apiclient.exceptions import AuthorizationFailure
 from keystoneclient.openstack.common.apiclient.exceptions import EndpointNotFound
-
-USER        = ''
-PASS        = ''
-TENANT_ID   = ''
-TENANT_NAME = ''
-AUTH_URL    = ''
+from keystoneclient.openstack.common.apiclient.exceptions import ConnectionRefused
 
 NOVA_VERSION = '2'
 
@@ -65,10 +60,13 @@ def list_nodes ():
 		print e
 
 	except EndpointNotFound as e:
-		print 'No keyston endpoint found: ' + AUTH_URL + str(e)
+		print 'No keyston endpoint found: ' + AUTH_URL + ' ' + str(e)
+
+	except ConnectionRefused as e:
+		print 'Cannot connect to: ' + AUTH_URL + '. '  + str(e)
 
 	except (KeyboardInterrupt, SystemExit) as e:
-		print 'Keyboard interruptionor system exit. ' + str(e)
+		print 'Keyboard interrupt or system exit. ' + str(e)
 
 	except:
 		print "Unrecognized exception: ", sys.exc_info()[0]
