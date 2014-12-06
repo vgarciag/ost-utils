@@ -55,6 +55,11 @@ def list_nodes ():
 
 		for server in nova.servers.list():
 			print 'Server name: ' + server.name + '; server Id: ' + server.id
+			for net_name in server.networks:
+				print '\t'+net_name + ' IP\'s: '
+				for ip in server.networks[net_name]:
+					print '\t\t' + ip
+
 
 	except AuthorizationFailure as e:
 		print e
