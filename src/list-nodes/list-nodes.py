@@ -86,7 +86,9 @@ def list_vips(session):
 	List all floating ips 
 	'''
 	neutron = client.Client(NEUTRON_API_VERSION, session=session, insecure=True)
-	print neutron.list_floatingips()
+
+	for floating in neutron.list_floatingips()['floatingips']:
+		print "Floating: " + str(floating)
 
 def parse_cmd_line_arguments():
 	cmd_parser = argparse.ArgumentParser(description=__doc__)
