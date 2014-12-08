@@ -22,7 +22,7 @@ from neutronclient.neutron           import client
 from keystoneclient.openstack.common.apiclient import exceptions as keyston_except
 from neutronclient.common                      import exceptions as neutron_except
 
-NOVA_API_VERSION = '2'
+NOVA_API_VERSION    = '2'
 NEUTRON_API_VERSION = '2.0'
 
 def load_config (config_file_path):
@@ -85,10 +85,26 @@ def list_vips(session):
 	u'''
 	List all floating ips 
 	'''
-	neutron = client.Client(NEUTRON_API_VERSION, session=session, insecure=True)
+	try:
+		neutron = client.Client(NEUTRON_API_VERSION, session=session, insecure=True)
 
-	for floating in neutron.list_floatingips()['floatingips']:
-		print "Floating: " + str(floating)
+		for floating in neutron.list_floatingips()['floatingips']:
+			print "Floating: " + str(floating)
+
+	except keyston_except.AuthorizationFailure as e:
+		print e
+
+	except keyston_except.EndpointNotFound as e:
+		print 'No keyston endpoint found: ' + AUTH_URL + ' ' + str(e)
+
+	except keyston_except.ConnectionRefused as e:
+		print 'Cannot connect to: ' + AUTH_URL + '. '  + str(e)
+
+	except (KeyboardInterrupt, SystemExit) as e:
+		print 'Keyboard interrupt or system exit. ' + str(e)
+
+	except:
+		print "Unrecognized exception: ", sys.exc_info()[0]
 
 def parse_cmd_line_arguments():
 	cmd_parser = argparse.ArgumentParser(description=__doc__)
@@ -99,8 +115,8 @@ def parse_cmd_line_arguments():
 							action='store',
 							metavar='TENANT_CONFIG_FILE',
 							default='tenant.conf',
-							help='Config file with tenant info an credentials to connect to. \
-							Default config file is tenant.conf')
+							help='Config file with tenant info and credentials to connect to. \
+							Default config file is tenant.conf looked for in CWD.')
 
 	args = cmd_parser.parse_args()
 	return args
