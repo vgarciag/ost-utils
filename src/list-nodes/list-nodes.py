@@ -9,6 +9,7 @@ This executable prints in several formats information about nodes and VIPs runni
 import sys 
 import os
 import argparse
+import json
 
 # config parser
 from configparser import ConfigParser
@@ -58,13 +59,18 @@ def list_nodes(session):
 
 		nova = Client(NOVA_API_VERSION, session=session, insecure=True)
 
+		formating_data={}
+		formating_data['servers']=[]
+
 		for server in nova.servers.list():
 			print 'Server name: ' + server.name + '; server Id: ' + server.id
+			formating_data['servers'].append( {'server': {'server_name' : server.name, 'networks':[]} })
 			for net_name in server.networks:
 				print '\t'+net_name + ' IP\'s: '
-				for ip in server.networks[net_name]:
+				for idx, ip in enumerate(server.networks[net_name]):
 					print '\t\t' + ip
 
+		print json.dumps(formating_data)
 
 	except keyston_except.AuthorizationFailure as e:
 		print e
@@ -88,9 +94,9 @@ def list_vips(session):
 	try:
 		neutron = client.Client(NEUTRON_API_VERSION, session=session, insecure=True)
 
-		for floating in neutron.list_floatingips()['floatingips']:
-			print "Floating: " + str(floating)
-
+		# for floating in neutron.list_floatingips()['floatingips']:
+		# 	print "Floating: " + str(floating)
+		print neutron.list_floatingips()
 	except keyston_except.AuthorizationFailure as e:
 		print e
 
