@@ -116,7 +116,7 @@ def parse_cmd_line_arguments():
 							metavar='TENANT_CONFIG_FILE',
 							default='tenant.conf',
 							help='Config file with tenant info and credentials to connect to. \
-							Default config file is tenant.conf looked for in CWD.')
+							Default config file is tenant.conf looked for itin CWD.')
 
 	args = cmd_parser.parse_args()
 	return args
