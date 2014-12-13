@@ -63,14 +63,16 @@ def list_nodes(session):
 		formating_data['servers']=[]
 
 		for server in nova.servers.list():
-			print 'Server name: ' + server.name + '; server Id: ' + server.id
-			formating_data['servers'].append( {'server': {'server_name' : server.name, 'networks':[]} })
+			# print 'Server name: ' + server.name + '; server Id: ' + server.id
+			formating_data['servers'].append({'server_name' : server.name, 'server_id': server.id, 'networks':[]})
 			for net_name in server.networks:
-				print '\t'+net_name + ' IP\'s: '
+				# print '\t'+net_name + ' IP\'s: '
+				formating_data['servers'][-1]['networks'].append({net_name:[]})
 				for idx, ip in enumerate(server.networks[net_name]):
-					print '\t\t' + ip
+					# print '\t\t' + str(idx) + ': ' + ip
+					formating_data['servers'][-1]['networks'][-1][net_name].append(ip)
 
-		print json.dumps(formating_data)
+		print json.dumps(formating_data, indent=4, separators=(',', ': '))
 
 	except keyston_except.AuthorizationFailure as e:
 		print e
@@ -96,7 +98,7 @@ def list_vips(session):
 
 		# for floating in neutron.list_floatingips()['floatingips']:
 		# 	print "Floating: " + str(floating)
-		print neutron.list_floatingips()
+		print json.dumps(neutron.list_floatingips(), indent=4, separators=(',', ': '))
 	except keyston_except.AuthorizationFailure as e:
 		print e
 
