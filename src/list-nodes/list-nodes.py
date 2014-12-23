@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
+
+# other way to call in venvs? to test: #!src/bin/python
+
 u'''
 This executable prints in several formats information about nodes and VIPs running in a stack.
 '''
@@ -10,6 +13,9 @@ import sys
 import os
 import argparse
 import json
+
+#API REST server. We use flask. There are others like eve, django...
+from flask import Flask, jsonify
 
 # config parser
 from configparser import ConfigParser
@@ -25,6 +31,8 @@ from neutronclient.common                      import exceptions as neutron_exce
 
 NOVA_API_VERSION    = '2'
 NEUTRON_API_VERSION = '2.0'
+
+app = Flask(__name__)
 
 def load_config (config_file_path):
 	config_file = ConfigParser()
@@ -72,7 +80,8 @@ def list_nodes(session):
 					# print '\t\t' + str(idx) + ': ' + ip
 					formating_data['servers'][-1]['networks'][-1][net_name].append(ip)
 
-		print json.dumps(formating_data, indent=4, separators=(',', ': '))
+		return formating_data
+		# return json.dumps(formating_data, indent=4, separators=(',', ': '))
 
 	except keyston_except.AuthorizationFailure as e:
 		print e
@@ -129,6 +138,11 @@ def parse_cmd_line_arguments():
 	args = cmd_parser.parse_args()
 	return args
 
+@app.route('/api/v1.0/servers', methods=['GET'])
+def get_servers():
+	session,auth = session_and_auth()
+	return jsonify(list_nodes(session))
+
 def main():
 	u'''
 	This function only calls the functions that list nodes
@@ -136,11 +150,7 @@ def main():
 	args = parse_cmd_line_arguments()
 	load_config(args.config_file)
 
-	session,auth = session_and_auth()
-
-	list_nodes(session)
-	list_vips(session)
-
+	app.run(debug=True)
 	return 0
 
 if __name__ == '__main__':

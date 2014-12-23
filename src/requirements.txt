@@ -6,3 +6,5 @@ python-keystoneclient==0.11.1
 #python-neutronclient==2.3.6 
 python-neutronclient==2.3.9
 configparser
+# RESTFUL Api server
+flask
