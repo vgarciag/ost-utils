@@ -73,6 +73,7 @@ def list_nodes(session):
 					formating_data['servers'][-1]['networks'][-1][net_name].append(ip)
 
 		print json.dumps(formating_data, indent=4, separators=(',', ': '))
+		return True
 
 	except keyston_except.AuthorizationFailure as e:
 		print e
@@ -88,6 +89,8 @@ def list_nodes(session):
 
 	except:
 		print "Unrecognized exception: ", sys.exc_info()[0]
+
+	return False
 
 def list_vips(session):
 	u'''
@@ -99,8 +102,12 @@ def list_vips(session):
 		# for floating in neutron.list_floatingips()['floatingips']:
 		# 	print "Floating: " + str(floating)
 		print json.dumps(neutron.list_floatingips(), indent=4, separators=(',', ': '))
+		return True
 	except keyston_except.AuthorizationFailure as e:
 		print e
+
+	except keyston_except.Unauthorized as e:
+		print 'Unauthorized: ' + str(e)
 
 	except keyston_except.EndpointNotFound as e:
 		print 'No keyston endpoint found: ' + AUTH_URL + ' ' + str(e)
@@ -113,6 +120,8 @@ def list_vips(session):
 
 	except:
 		print "Unrecognized exception: ", sys.exc_info()[0]
+
+	return False
 
 def parse_cmd_line_arguments():
 	cmd_parser = argparse.ArgumentParser(description=__doc__)
