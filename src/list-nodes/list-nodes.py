@@ -141,7 +141,11 @@ def parse_cmd_line_arguments():
 @app.route('/api/v1.0/servers', methods=['GET'])
 def get_servers():
 	session,auth = session_and_auth()
-	return jsonify(list_nodes(session))
+
+	servers = list_nodes(session)
+	if not servers:
+		return "500: insernal server error"
+	return jsonify(servers)
 
 def main():
 	u'''
